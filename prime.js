@@ -10,7 +10,10 @@ function isPrime(e) {
     return true
 }
 
-
+function isReversePrime(e) {
+  let num = Number(e.toString().split('').reverse().join(''))
+  return isPrime(num) && isPrime(e)
+}
 
 function genPrime(e) {
   if(e < 2){
