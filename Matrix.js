@@ -6,8 +6,8 @@ const matrix = (e) =>{
   }
   return e
 } 
-const size = (e) =>{
-  return [e.length, e[0].length]
+const size = (el) =>{
+  return [el.length, el[0].length]
 }
 const zero = function (a,b = a){
   let col = []
