@@ -89,3 +89,13 @@ const scalar = function (arr,s){
   }
   return arr.map(el => el.map(e => e*s))
 }
+
+const transpose = (arr) => {
+  let res = zero(size(arr)[1],size(arr)[0])
+  for (let i = 0; i < arr[i].length; i++) {
+    for (let j = 0; j < arr.length; j++) {
+      res[i][j] = arr[j][i]
+    }
+  }
+  return res
+}
