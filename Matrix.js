@@ -67,21 +67,20 @@ const subtrac = function(a,b) {
   return result
 }
 const multiply = function (arr1,arr2) {
-  if(size(arr1)[0] !== size(arr2)[1]){
+  if(size(arr1)[1] !== size(arr2)[0]){
     return "You should have matrix 2 matrix A & B that same number of column A and number of row B"
   }
   let result = zero(size(arr1)[0],size(arr2)[1])
-  for(let i = 0; i < size(arr1)[1]; i++){
-    for(let j = 0; j < size(arr2)[0];j++){
-      result[i][j] = 0
+  for(let i = 0; i < size(arr1)[0]; i++){
+    for(let j = 0; j < size(arr2)[1];j++){
       for(let k = 0; k < size(arr1)[1]; k++){
         result[i][j] = result[i][j] + arr1[i][k]*arr2[k][j]
       }
     }
   }
-  
   return result
 }
+
 
 const scalar = function (arr,s){
   if(!Array.isArray(arr)){
