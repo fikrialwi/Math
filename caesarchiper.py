@@ -14,5 +14,4 @@ def decryptCC(txt,n):
     return p
 print(encryptCC("halo nama saya dzulfikri",6))
 for i in range(0,27):
-    # TODO: write code...
     print(decryptCC("ymnmdbgnswgk",i),"-",i)
