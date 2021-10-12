@@ -7,7 +7,9 @@ def generateKey(text, key):
             key.append(key[i % len(key)])
     return("" . join(key))
      
-def cipherText(text, key):
+def encryptVig(text, key):
+    if text.isalnum() == False:
+        return "Sorry my Boy, I can't excute your code"
     result = []
     for i in range(len(text)):
         if text[i].islower():
@@ -19,7 +21,9 @@ def cipherText(text, key):
         result.append(chr(x))
     return("" . join(result))
 
-def originalText(text, key):
+def decryptVig(text, key):
+    if text == "Sorry my Boy, I can't excute your code" or text.isalnum() == False:
+        return ":("
     result = []
     for i in range(len(text)):
         if text[i].islower():
@@ -31,6 +35,3 @@ def originalText(text, key):
         result.append(chr(x))
     return("" . join(result))
     
-key = generateKey('hellomyfriends','friends')
-chiper = cipherText('hellomyfriends', key)
-print(originalText(chiper,key))
