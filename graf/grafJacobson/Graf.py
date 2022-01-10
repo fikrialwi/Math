@@ -51,19 +51,20 @@ class GrafJacobson(GrafofRing):
                     e = (1-(i*j))%self.getNumber()
                     if e not in self.getRing().unit():
                         edge.append({i,j})
-        return self.getRing().uniq(edge)
-    def degVertex(self):
+        edge = self.getRing().uniq(edge)
+        return list(map(tuple,edge))
+    def orde(self):
         return len(self.vertex())
-    def degEdge(self):
+    def size(self):
         return len(self.edge())
     def edgeofVertex(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            e = (1-(i*vertex))%self.getNumber()
-            if e not in self.getRing().unit():
-                edge.append(i)
+            for i in self.vertex():
+                if self.isEdgeof(i,vertex) :
+                    edge.append(i)
         return edge
     def degEdgeofVertex(self, vertex):
         return len(self.edgeofVertex(vertex))
@@ -97,21 +98,22 @@ class GrafUnit(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                if i+j%self.getNumber() in self.getUnit():
-                    edge.append(i)
-        return edge
-    def degVertex(self):
+                if i != j and i+j%self.getNumber() in self.getUnit():
+                    edge.append({i,j})
+        edge = self.getRing().uniq(edge)
+        return list(map(tuple,edge))
+    def orde(self):
         return len(self.vertex())
-    def degEdge(self):
+    def size(self):
         return len(self.edge())
     def edgeofVertex(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            e = (i+vertex)%self.getNumber()
-            if e in self.getRing().unit():
-                edge.append(i)
+            for i in self.vertex():
+                if self.isEdgeof(i,vertex) :
+                    edge.append(i)
         return edge
     def degEdgeofVertex(self, vertex):
         return len(self.edgeofVertex(vertex))
@@ -143,21 +145,22 @@ class GrafZeroDivisor(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                if i*j%self.getNumber() == 0:
-                    edge.append(i)
-        return edge
-    def degVertex(self):
+                if i != j and i*j%self.getNumber() == 0:
+                    edge.append({i,j})
+        edge = self.getRing().uniq(edge)
+        return list(map(tuple,edge))
+    def orde(self):
         return len(self.vertex())
-    def degEdge(self):
+    def size(self):
         return len(self.edge())
     def edgeofVertex(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            e = (i*vertex)%self.getNumber()
-            if e ==0 :
-                edge.append(i)
+            for i in self.vertex():
+                if self.isEdgeof(i,vertex) :
+                    edge.append(i)
         return edge
     def degEdgeofVertex(self, vertex):
         return len(self.edgeofVertex(vertex))
@@ -191,26 +194,26 @@ class GrafTotal(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                if i+j%self.getNumber() in self.getZeroDivisor():
-                    edge.append(i)
-        return edge
-    def degVertex(self):
+                if i != j and i+j%self.getNumber() in self.getZeroDivisor():
+                    edge.append({i,j})
+        edge = self.getRing().uniq(edge)
+        return list(map(tuple,edge))
+    def orde(self):
         return len(self.vertex())
-    def degEdge(self):
+    def size(self):
         return len(self.edge())
     def edgeofVertex(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            e = (i+vertex)%self.getNumber()
-            if e in self.getZeroDivisor() :
+            if self.isEdgeof(i,vertex) :
                 edge.append(i)
         return edge
     def degEdgeofVertex(self, vertex):
         return len(self.edgeofVertex(vertex))
     def isEdgeof(self,vertex1,vertex2):
-        return (vertex1*vertex2)%self.getNumber() in self.getZeroDivisor()
+        return (vertex1+vertex2)%self.getNumber() in self.getZeroDivisor()
     def matrixAdjencey(self):
         matrix = []
         for i in self.vertex():
@@ -239,19 +242,20 @@ class GrafTotalZeroDivisor(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                if (i+j)%self.getNumber() in self.getZeroDivisor() and (i*j)%self.getNumber() == 0 :
-                    edge.append(i)
-        return edge
-    def degVertex(self):
+                if i != j and (i+j)%self.getNumber() in self.getZeroDivisor() and (i*j)%self.getNumber() == 0 :
+                    edge.append({i,j})
+        edge = self.getRing().uniq(edge)
+        return list(map(tuple,edge))
+    def orde(self):
         return len(self.vertex())
-    def degEdge(self):
+    def size(self):
         return len(self.edge())
     def edgeofVertex(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            if (i+vertex)%self.getNumber() in self.getZeroDivisor() and  (i*vertex)%self.getNumber() == 0:
+            if self.isEdgeof(i,vertex):
                 edge.append(i)
         return edge
     def degEdgeofVertex(self, vertex):
@@ -286,25 +290,77 @@ class GrafUnit(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                if (i*j)%self.getNumber() == 1:
-                    edge.append(i)
-        return edge
-    def degVertex(self):
+                if i != j and (i*j)%self.getNumber() == 1:
+                    edge.append({i,j})
+        edge = self.getRing().uniq(edge)
+        return list(map(tuple,edge))
+    def orde(self):
         return len(self.vertex())
-    def degEdge(self):
+    def size(self):
         return len(self.edge())
     def edgeofVertex(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            if (i*vertex)%self.getNumber() == 1:
+            if self.isEdgeof(i*vertex):
                 edge.append(i)
         return edge
     def degEdgeofVertex(self, vertex):
         return len(self.edgeofVertex(vertex))
     def isEdgeof(self,vertex1,vertex2):
         return (vertex1*vertex2)%self.getNumber() == 1
+    def matrixAdjencey(self):
+        matrix = []
+        for i in self.vertex():
+            row = []
+            for j in self.vertex():
+                if i != j and self.isEdgeof(i,j):
+                    row.append(1)
+                else:
+                    row.append(0)
+            matrix.append(row)
+        return matrix
+
+class GrafAnnihilator(GrafofRing):
+    def __init__(self, ring, operation):
+        super().__init__(ring, operation)
+    def getNumber(self):
+        return super().getNumber()
+    def getRing(self):
+        return super().getRing()
+    def getZeroDivisor(self):
+        return self.getRing().zeroDivisor()
+    def vertex(self):
+        return self.getZeroDivisor()
+    def edge(self):
+        vertex = self.vertex()
+        edge = []
+        for i in vertex:
+            for j in vertex:
+                ring = self.getRing()
+                if i != j and self.getRing().union(ring.annihilator(i), ring.annihilator(j)) != ring.annihilator(i*j%self.getNumber()):
+                    edge.append({i,j})
+        edge = self.getRing().uniq(edge)
+        return list(map(tuple,edge))
+    def orde(self):
+        return len(self.vertex())
+    def size(self):
+        return len(self.edge())
+    def edgeofVertex(self,vertex):
+        if vertex not in self.vertex() : 
+            return "Bilangan tidak termasuk dalam himpunan titik graf"
+        edge = []
+        for i in self.vertex():
+            ring = self.getRing()
+            if self.getRing().union(ring.annihilator(i), ring.annihilator(vertex)) != ring.annihilator(i*vertex%self.getNumber()):
+                edge.append(i)
+        return edge
+    def degEdgeofVertex(self, vertex):
+        return len(self.edgeofVertex(vertex))
+    def isEdgeof(self,vertex1,vertex2):
+        ring = self.getRing()
+        return self.getRing().union(ring.annihilator(vertex1), ring.annihilator(vertex2)) != ring.annihilator(vertex1*vertex2%self.getNumber())
     def matrixAdjencey(self):
         matrix = []
         for i in self.vertex():
