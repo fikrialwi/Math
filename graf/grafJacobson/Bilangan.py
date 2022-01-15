@@ -13,6 +13,10 @@ class Bilangan:
         res =[]
         [res.append(i) for i in set if i not in res]
         return res
+    def union(self, setA, setB):
+        set = [*setA]
+        [set.append(i) for i in setB if i not in set]
+        return set
     def subset(self, setA, setB):
         k = 0
         for i in setA:
@@ -108,10 +112,10 @@ class Modulo(Bilangan):
         set = []
         for i in self.element():
             for j in self.element():
-                if i != 0 or j != 0:
+                if i != 0 and j != 0:
                     if i*j % self.number == 0:
                         set.append(i)
-        return set 
+        return self.uniq(set) 
     def cayley(self):
         row = []
         for i in self.element():
@@ -124,6 +128,13 @@ class Modulo(Bilangan):
                 col.append(e)
             row.append(col)
         return row
+    
+    def annihilator(self, number):
+        set = []
+        zeroDivisor = self.zeroDivisor()
+        if number in zeroDivisor:
+            [set.append(r) for r in self.element() if r*number % self.number == 0]
+        return set
 
 class Jacobson(Modulo):
     def __init__(self, number, operation):
