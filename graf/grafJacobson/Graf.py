@@ -11,15 +11,6 @@ class GrafofRing:
         return self.operation
     def getRing(self):
         return bil.Modulo(self.getNumber(),self.getOperation())
-    @abc.abstractclassmethod
-    def edge(self):
-        return self
-    @abc.abstractclassmethod
-    def vertex(self):
-        return self
-    @abc.abstractclassmethod
-    def matrixAdjencey(self):
-        return self
 
 class GrafJacobson(GrafofRing):
     def __init__(self, ring, operation):
@@ -33,10 +24,10 @@ class GrafJacobson(GrafofRing):
     def getJacobson(self):  
         return bil.Jacobson(self.getNumber(),self.getOperation())
     def get_jacobson(self):
-        return self.getJacobson().jacobson()
+        return self.getJacobson().jacobson()[0]
     def vertex(self):
         element = self.getJacobson().element()
-        jacobson = self.getJacobson().jacobson()[0]
+        jacobson = self.get_jacobson()
         vertex = []
         if type(jacobson) == list:
             [vertex.append(i) for i in element if i not in jacobson]
@@ -48,8 +39,7 @@ class GrafJacobson(GrafofRing):
         for i in self.vertex():
             for j in self.vertex():
                 if i != j:
-                    e = (1-(i*j))%self.getNumber()
-                    if e not in self.getRing().unit():
+                    if self.adjacent(i,j):
                         edge.append({i,j})
         edge = self.getRing().uniq(edge)
         return list(map(tuple,edge))
@@ -57,25 +47,24 @@ class GrafJacobson(GrafofRing):
         return len(self.vertex())
     def size(self):
         return len(self.edge())
-    def edgeofVertex(self,vertex):
+    def neighboor(self,vertex):
         if vertex not in self.vertex(): 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            for i in self.vertex():
-                if self.isEdgeof(i,vertex) :
-                    edge.append(i)
+            if self.adjacent(i,vertex) :
+                edge.append(i)
         return edge
-    def degEdgeofVertex(self, vertex):
-        return len(self.edgeofVertex(vertex))
-    def isEdgeof(self,vertex1,vertex2):
+    def degree(self, vertex):
+        return len(self.neighboor(vertex))
+    def adjacent(self,vertex1,vertex2):
         return (1-vertex1*vertex2)%self.getNumber() not in self.getRing().unit()
     def matrixAdjencey(self):
         matrix = []
         for i in self.vertex():
             row = []
             for j in self.vertex():
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     row.append(1)
                 else:
                     row.append(0)
@@ -98,7 +87,7 @@ class GrafUnit(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                if i != j and (i+j)%self.getNumber() in self.getUnit():
+                if (i+j)%self.getNumber() in self.getUnit():
                     edge.append({i,j})
         edge = self.getRing().uniq(edge)
         return list(map(tuple,edge))
@@ -106,25 +95,24 @@ class GrafUnit(GrafofRing):
         return len(self.vertex())
     def size(self):
         return len(self.edge())
-    def edgeofVertex(self,vertex):
+    def neighboor(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            for i in self.vertex():
-                if self.isEdgeof(i,vertex) :
-                    edge.append(i)
+            if self.adjacent(i,vertex) :
+                edge.append(i)
         return edge
-    def degEdgeofVertex(self, vertex):
-        return len(self.edgeofVertex(vertex))
-    def isEdgeof(self,vertex1,vertex2):
-        return (vertex1*vertex2)%self.getNumber() in self.getRing().unit()
+    def degree(self, vertex):
+        return len(self.neighboor(vertex))
+    def adjacent(self,vertex1,vertex2):
+        return (vertex1+vertex2)%self.getNumber() in self.getUnit() and vertex1 != vertex2
     def matrixAdjencey(self):
         matrix = []
         for i in self.vertex():
             row = []
             for j in self.vertex():
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     row.append(1)
                 else:
                     row.append(0)
@@ -145,7 +133,7 @@ class GrafZeroDivisor(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                if i != j and i*j%self.getNumber() == 0:
+                if i*j%self.getNumber() == 0:
                     edge.append({i,j})
         edge = self.getRing().uniq(edge)
         return list(map(tuple,edge))
@@ -153,25 +141,24 @@ class GrafZeroDivisor(GrafofRing):
         return len(self.vertex())
     def size(self):
         return len(self.edge())
-    def edgeofVertex(self,vertex):
+    def neighboor(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            for i in self.vertex():
-                if self.isEdgeof(i,vertex) :
-                    edge.append(i)
+            if self.adjacent(i,vertex) :
+                edge.append(i)
         return edge
-    def degEdgeofVertex(self, vertex):
-        return len(self.edgeofVertex(vertex))
-    def isEdgeof(self,vertex1,vertex2):
-        return (vertex1*vertex2)%self.getNumber() == 0
+    def degree(self, vertex):
+        return len(self.neighboor(vertex))
+    def adjacent(self,vertex1,vertex2):
+        return (vertex1*vertex2)%self.getNumber() == 0 and vertex1 != vertex2
     def matrixAdjencey(self):
         matrix = []
         for i in self.vertex():
             row = []
             for j in self.vertex():
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     row.append(1)
                 else:
                     row.append(0)
@@ -194,7 +181,7 @@ class GrafTotal(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     edge.append({i,j})
         edge = self.getRing().uniq(edge)
         return list(map(tuple,edge))
@@ -202,24 +189,24 @@ class GrafTotal(GrafofRing):
         return len(self.vertex())
     def size(self):
         return len(self.edge())
-    def edgeofVertex(self,vertex):
+    def neighboor(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            if self.isEdgeof(i,vertex) :
+            if self.adjacent(i,vertex) :
                 edge.append(i)
         return edge
-    def degEdgeofVertex(self, vertex):
-        return len(self.edgeofVertex(vertex))
-    def isEdgeof(self,vertex1,vertex2):
-        return (vertex1+vertex2)%self.getNumber() in self.getZeroDivisor()
+    def degree(self, vertex):
+        return len(self.neighboor(vertex))
+    def adjacent(self,vertex1,vertex2):
+        return (vertex1+vertex2)%self.getNumber() in self.getZeroDivisor() and vertex1 != vertex2
     def matrixAdjencey(self):
         matrix = []
         for i in self.vertex():
             row = []
             for j in self.vertex():
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     row.append(1)
                 else:
                     row.append(0)
@@ -242,7 +229,7 @@ class GrafTotalZeroDivisor(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                if i != j and self.isEdgeof(i,j) :
+                if self.adjacent(i,j) :
                     edge.append({i,j})
         edge = self.getRing().uniq(edge)
         return list(map(tuple,edge))
@@ -250,24 +237,24 @@ class GrafTotalZeroDivisor(GrafofRing):
         return len(self.vertex())
     def size(self):
         return len(self.edge())
-    def edgeofVertex(self,vertex):
+    def neighboor(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            if self.isEdgeof(i,vertex):
+            if self.adjacent(i,vertex):
                 edge.append(i)
         return edge
-    def degEdgeofVertex(self, vertex):
-        return len(self.edgeofVertex(vertex))
-    def isEdgeof(self,vertex1,vertex2):
-        return (vertex1*vertex2)%self.getNumber() in self.getZeroDivisor() and (vertex1+vertex2)%self.getNumber() == 0
+    def degree(self, vertex):
+        return len(self.neighboor(vertex))
+    def adjacent(self,vertex1,vertex2):
+        return vertex1 != vertex2 and (vertex1*vertex2)%self.getNumber() in self.getZeroDivisor() and (vertex1+vertex2)%self.getNumber() == 0
     def matrixAdjencey(self):
         matrix = []
         for i in self.vertex():
             row = []
             for j in self.vertex():
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     row.append(1)
                 else:
                     row.append(0)
@@ -290,7 +277,7 @@ class GrafIdentity(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     edge.append({i,j})
         edge = self.getRing().uniq(edge)
         return list(map(tuple,edge))
@@ -298,24 +285,24 @@ class GrafIdentity(GrafofRing):
         return len(self.vertex())
     def size(self):
         return len(self.edge())
-    def edgeofVertex(self,vertex):
+    def neighboor(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            if self.isEdgeof(i,vertex):
+            if self.adjacent(i,vertex):
                 edge.append(i)
         return edge
-    def degEdgeofVertex(self, vertex):
-        return len(self.edgeofVertex(vertex))
-    def isEdgeof(self,vertex1,vertex2):
-        return (vertex1*vertex2)%self.getNumber() == 1
+    def degree(self, vertex):
+        return len(self.neighboor(vertex))
+    def adjacent(self,vertex1,vertex2):
+        return (vertex1*vertex2)%self.getNumber() == 1 and vertex1 != vertex2
     def matrixAdjencey(self):
         matrix = []
         for i in self.vertex():
             row = []
             for j in self.vertex():
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     row.append(1)
                 else:
                     row.append(0)
@@ -338,8 +325,7 @@ class GrafAnnihilator(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                ring = self.getRing()
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     edge.append({i,j})
         edge = self.getRing().uniq(edge)
         return list(map(tuple,edge))
@@ -347,25 +333,25 @@ class GrafAnnihilator(GrafofRing):
         return len(self.vertex())
     def size(self):
         return len(self.edge())
-    def edgeofVertex(self,vertex):
+    def neighboor(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            if self.isEdgeof(i,vertex):
+            if self.adjacent(i,vertex):
                 edge.append(i)
         return edge
-    def degEdgeofVertex(self, vertex):
-        return len(self.edgeofVertex(vertex))
-    def isEdgeof(self,vertex1,vertex2):
+    def degree(self, vertex):
+        return len(self.neighboor(vertex))
+    def adjacent(self,vertex1,vertex2):
         ring = self.getRing()
-        return self.getRing().union(ring.annihilator(vertex1), ring.annihilator(vertex2)) != ring.annihilator(vertex1*vertex2%self.getNumber())
+        return vertex1 != vertex2 and ring.union(ring.annihilator(vertex1), ring.annihilator(vertex2)) != ring.annihilator(vertex1*vertex2%self.getNumber())
     def matrixAdjencey(self):
         matrix = []
         for i in self.vertex():
             row = []
             for j in self.vertex():
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     row.append(1)
                 else:
                     row.append(0)
@@ -388,7 +374,7 @@ class GrafMaximal(GrafofRing):
         edge = []
         for i in vertex:
             for j in vertex:
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     edge.append({i,j})
         edge = self.getRing().uniq(edge)
         return list(map(tuple,edge))
@@ -396,30 +382,37 @@ class GrafMaximal(GrafofRing):
         return len(self.vertex())
     def size(self):
         return len(self.edge())
-    def edgeofVertex(self,vertex):
+    def neighboor(self,vertex):
         if vertex not in self.vertex() : 
             return "Bilangan tidak termasuk dalam himpunan titik graf"
         edge = []
         for i in self.vertex():
-            if self.isEdgeof(i,vertex):
+            if self.adjacent(i,vertex):
                 edge.append(i)
         return edge
-    def degEdgeofVertex(self, vertex):
-        return len(self.edgeofVertex(vertex))
-    def isEdgeof(self,vertex1,vertex2):
+    def degree(self, vertex):
+        return len(self.neighboor(vertex))
+    def adjacent(self,vertex1,vertex2):
+        return vertex1 != vertex2 and vertex1 in self.unionOfIdealMax() and vertex2 in self.unionOfIdealMax()
+    def unionOfIdealMax(self):
+        if len(self.getIdealMax()) == 0:
+            return []
+        if len(self.getIdealMax()) == 1:
+            return [*self.getIdealMax()]
+        gabungan = self.getRing().union(self.getIdealMax()[0], self.getIdealMax()[1])
         for i in self.getIdealMax():
-            if vertex1 in i and vertex2 in i:
-                return True
-        return False
+            temp = self.getRing().union(gabungan, i)
+            if len(temp) < len(gabungan):
+                gabungan = [*temp]
+        return gabungan
     def matrixAdjencey(self):
         matrix = []
         for i in self.vertex():
             row = []
             for j in self.vertex():
-                if i != j and self.isEdgeof(i,j):
+                if self.adjacent(i,j):
                     row.append(1)
                 else:
                     row.append(0)
             matrix.append(row)
         return matrix
-
