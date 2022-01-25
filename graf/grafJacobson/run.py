@@ -4,6 +4,7 @@ import networkx as nx
 import matplotlib.pyplot as m
 import TopologiIndex as ti
 
+
 class show():
     def __init__(self):
         self.graph = input('masukkan jenis graf : ').lower()
@@ -87,6 +88,9 @@ class show():
         f = open(f"hasil/graf {graph} pada {ring} dan topologi {topologi}.txt", "w")
         graf = self.g[graph](ring,operator)
         topo = self.t[topologi](graf)
-        text = f'graf : {graph}\nring : {ring}\noperator : {operator}\n\tsimpul : {graf.vertex()}\n\tsisi : {graf.edge()}\n\torde : {graf.orde()}\n\tsize : {graf.size()}\n =============== \n\ttopologi indeks : {topologi} => nilainya : {topo.topologi()}'
+        text = f'graf\t: {graph}\nring\t: {ring}\noperator\t: {operator}\nsimpul\t: {graf.vertex()}\n\tsisi : {graf.edge()}\norde : {graf.orde()}\nsize : {graf.size()}\n =============== \ntopologi indeks\t: {topologi}\t=> nilainya\t: {topo.topologi()}\n ==============\n'
+        
+        for i in graf.vertex():
+            text += f'deg({i})\t=> {graf.degree(i)}\n'
         f.write(text)
 show()
